@@ -1,7 +1,13 @@
 @import-normalize; /* bring in normalize.css styles */
-@import url('https://fonts.googleapis.com/css?family=Comfortaa&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Comfortaa|Fredoka+One&display=swap");
+html {
+  height: 100%;
+}
 body {
-  margin: 0;font-family: 'Comfortaa', cursive;
+  margin: 0;
+  font-family: "Comfortaa", cursive;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #bbded6;
+  height: 100%;
 }
