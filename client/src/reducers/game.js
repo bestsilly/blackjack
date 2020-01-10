@@ -3,7 +3,9 @@ import { GAME } from "../actions/game";
 const initialState = {
   loading: false,
   error: null,
-  payload: []
+  playerCard: [],
+  computerCard: [],
+  username: ""
 };
 
 const game = (state = initialState, action) => {
@@ -17,7 +19,8 @@ const game = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        payload: action.payload
+        playerCard: action.playerCard,
+        username: action.username
       };
     case GAME.START_GAME_FAILED:
       return {

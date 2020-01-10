@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 const ButtonWithStyled = styled.button`
   border: 0;
-  border-radius: 8px;
+  border-radius: 60px;
   font-size: 20px;
   font-family: "Comfortaa", cursive;
   font-weight: bold;
@@ -11,11 +11,12 @@ const ButtonWithStyled = styled.button`
   transition: 0.1s all ease-in;
   margin-top: 30px;
   padding: 12px 0;
-  color: #009688;
+  color: #fff;
+  background-color: #009688;
   &:active,
   &:focus {
     outline: 0;
-    background-color: #009688;
+    background-color: #1b736b;
     color: #fff;
     box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.15);
     transform: translateY(-1px);

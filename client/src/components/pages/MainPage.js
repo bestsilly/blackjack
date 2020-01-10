@@ -46,8 +46,8 @@ const MainPage = props => {
   );
 };
 
-const mapDispatchToProps = dispatch => ({
-  startGame: username => dispatch(startGame(username))
+const mapDispatchToProps = (dispatch,ownProps) => ({
+  startGame: username => dispatch(startGame(username, ownProps))
 });
 
 export default connect(null, mapDispatchToProps)(MainPage);
