@@ -16,7 +16,7 @@ exports.startgame = function(req, res) {
     "A"
   ];
   let deck = new Array();
-  let playerCard = new Array();
+  let playerCards = new Array();
 
   function createDeck() {
     deck = new Array();
@@ -46,12 +46,12 @@ exports.startgame = function(req, res) {
   }
 
   function dealHand() {
-    playerCard = deck.splice(0, 2);
-    computerCard = deck.splice(0, 2);
+    playerCards = deck.splice(0, 2);
+    computerCards = deck.splice(0, 2);
     let doc = {
       player: req.body.username,
-      playerCard,
-      computerCard,
+      playerCards,
+      computerCards,
       deck,
       startAt: new Date(),
       endAt: null,
@@ -69,7 +69,7 @@ exports.startgame = function(req, res) {
     createDeck();
     shuffle();
     dealHand();
-    res.send(playerCard);
+    res.send(playerCards);
   }
 };
 
@@ -90,19 +90,22 @@ exports.hit = function(req, res) {
       .toArray(function(error, result) {
         if (error) throw error;
         let gameDeck = result[0].deck;
-        let holdingCards = result[0].playerCard;
+        let holdingCards = result[0].playerCards;
         let hitCard = gameDeck.splice(0, 1);
-        playerCard = holdingCards.concat(hitCard);
+        playerCards = holdingCards.concat(hitCard);
 
-        let currentPoint = playerCard.reduce((acc, obj) => acc + obj.Weight, 0);
+        let currentPoint = playerCards.reduce(
+          (acc, obj) => acc + obj.Weight,
+          0
+        );
 
         let update = {
           deck: gameDeck,
-          playerCard
+          playerCards
         };
         updateGame(update);
-        check(currentPoint,playerCard);
-        res.send(playerCard);
+        check(currentPoint, playerCards);
+        res.send(playerCards);
       });
   }
 
@@ -117,4 +120,41 @@ exports.hit = function(req, res) {
   hitMe();
 };
 
-exports.stand = function(req, res) {};
+exports.stand = function(req, res) {
+  async function endRound() {
+    result = await db
+      .find({}, { player: req.body.username })
+      .toArray(function(error, result) {
+        if (error) throw error;
+        let { playerCards, computerCards } = result[0];
+        let playerPoints = summaryPoint(playerCards);
+        let computerPoints = summaryPoint(computerCards);
+        const roundDetail = {
+          playerCards,
+          computerCards
+        };
+        if (playerPoints > computerPoints) {
+          res.send({
+            ...roundDetail,
+            winner: req.body.username
+          });
+        } else if (playerPoints < computerPoints) {
+          res.send({
+            ...roundDetail,
+            winner: "Computer"
+          });
+        } else {
+          res.send({
+            ...roundDetail,
+            winner: "draw"
+          });
+        }
+      });
+  }
+
+  endRound();
+};
+
+function summaryPoint(holdingCards) {
+  return holdingCards.reduce((acc, obj) => acc + obj.Weight, 0);
+}
