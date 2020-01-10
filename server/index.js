@@ -1,8 +1,8 @@
 const express = require("express");
 const MongoClient = require("mongodb").MongoClient;
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const gameRoute = require("./api/routes/game");
-// const api = require("./api");
 
 const PORT = 5000;
 const app = express();
@@ -18,9 +18,9 @@ MongoClient.connect("mongodb://blackjack_db:27017/blackjack", function(
   dbo.createCollection("games", function(err, result) {
     if (err) throw err;
   });
-  global.db = dbo.collection("games")
+  global.db = dbo.collection("games");
 });
-
+app.use(cors());
 app.use(bodyParser.json()); // to support JSON-encoded bodies
 app.use(
   bodyParser.urlencoded({
@@ -28,6 +28,14 @@ app.use(
     extended: true
   })
 );
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 
 app.use("/api", gameRoute);
 
