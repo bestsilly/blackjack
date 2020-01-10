@@ -20,3 +20,8 @@ services:
       - "5051:5000"
     volumes:
       - ./server:/usr/src/app
+  db:
+    image: mongo
+    container_name: blackjack_db
+    ports:
+      - "27017:27017"
