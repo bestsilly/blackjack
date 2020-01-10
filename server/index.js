@@ -13,11 +13,12 @@ MongoClient.connect("mongodb://blackjack_db:27017/blackjack", function(
 ) {
   if (err) throw err;
 
-  global.db = client.db("blackjack");
+  dbo = client.db("blackjack");
   // create game collection in database
-  db.createCollection("games", function(err, result) {
+  dbo.createCollection("games", function(err, result) {
     if (err) throw err;
   });
+  global.db = dbo.collection("games")
 });
 
 app.use(bodyParser.json()); // to support JSON-encoded bodies
