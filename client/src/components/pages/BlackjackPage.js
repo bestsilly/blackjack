@@ -91,12 +91,27 @@ const ScoreBadge = styled.p`
   top: -55px;
   font-size: 40px;
   font-weight: bold;
+
+  ${({ loser }) =>
+    loser &&
+    `&:after {
+    content: '';
+    opacity: 0.7;
+    position: absolute;
+    display: block;
+    top: 40%;
+    left: -10%;
+    width: 120%;
+    height: 4px;
+    border-radius: 2px;
+    background-color: #f44336;
+    }`}
 `;
 
 const BlackjackBadge = styled.span`
   padding: 10px 15px;
   position: absolute;
-  top: -5px;
+  top: 15px;
   right: -18px;
   white-space: nowrap;
   font-size: 16px;
@@ -155,7 +170,14 @@ const BlackjackPage = ({ game, hitMe, stand, exit, history }) => {
             </>
           ) : (
             <>
-              <ScoreBadge>{pointsSummary(game.computerCards)}</ScoreBadge>
+              <ScoreBadge
+                loser={
+                  pointsSummary(game.computerCards) <
+                  pointsSummary(game.playerCards)
+                }
+              >
+                {pointsSummary(game.computerCards)}
+              </ScoreBadge>
               {game.computerCards.map((item, index) => (
                 <Card key={index} Value={item.Value} />
               ))}
@@ -175,7 +197,14 @@ const BlackjackPage = ({ game, hitMe, stand, exit, history }) => {
         </StatusWrapper>
         <CardWrapper>
           {!isEmpty(game.playerCards) && (
-            <ScoreBadge>{pointsSummary(game.playerCards)}</ScoreBadge>
+            <ScoreBadge
+              loser={
+                pointsSummary(game.computerCards) >
+                pointsSummary(game.playerCards)
+              }
+            >
+              {pointsSummary(game.playerCards)}
+            </ScoreBadge>
           )}
           {game.playerCards.map((item, index) => (
             <Card key={index} Value={item.Value} />

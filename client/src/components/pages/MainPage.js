@@ -36,7 +36,7 @@ const MainPage = props => {
   useEffect(() => {
     reinitTimer();
     clearState();
-  }, [reinitTimer]);
+  }, [reinitTimer, clearState]);
 
   return (
     <Wrapper>

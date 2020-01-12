@@ -8,7 +8,7 @@ const ButtonWithStyled = styled.button`
   font-family: "Comfortaa", cursive;
   font-weight: bold;
   width: 230px;
-  transition: 0.1s all ease-in;
+  transition: transform 0.1s cubic-bezier(0, 1.8, 1, 1.8);
   margin-top: 30px;
   padding: 12px 0;
   color: #fff;
@@ -18,13 +18,13 @@ const ButtonWithStyled = styled.button`
     outline: 0;
     background-color: #1b736b;
     color: #fff;
-    box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.15);
-    transform: translateY(-1px);
+    box-shadow: 2px 3px 10px #b9d4d6;
+    transform: scale(1.1) rotate(-1deg);
   }
 
   &:hover {
-    box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.15);
-    transform: translateY(-1px);
+    box-shadow: 2px 3px 10px #b9d4d6;
+    transform: scale(1.1) rotate(-1deg);
   }
 `;
 
