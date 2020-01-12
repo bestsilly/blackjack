@@ -5,6 +5,7 @@ import Card from "../commons/Card";
 import Button from "../commons/Button";
 import { isEmpty } from "lodash";
 import { hitMe } from "../../actions/game";
+import Counter from "../commons/Counter";
 
 const Wrapper = styled.div`
   display: flex;
@@ -25,7 +26,7 @@ const Header = styled.div`
   }
 `;
 
-const Logo = styled.div`
+const LeftAsset = styled.div`
   width: 33.33%;
 `;
 
@@ -82,10 +83,18 @@ const BlackjackPage = ({ game, hitMe }) => {
     hitMe(game.username);
   };
 
+  //   useEffect(()=> {
+  //       setTimeout(()=>{
+  //         alert('YOU LOSE')
+  //       }, 10000)
+  //   })
+
   return (
     <Wrapper>
       <Header>
-        <Logo></Logo>
+        <LeftAsset>
+          <Counter timeout={() => console.log(123)} />
+        </LeftAsset>
         <h1>BLACKJACK</h1>
         <Username>
           <p>{game.username}</p>

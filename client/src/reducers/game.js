@@ -36,6 +36,7 @@ const game = (state = initialState, action) => {
     case GAME.HIT_ME_SUCCESS:
       return {
         ...state,
+        loading: false,
         playerCards: action.playerCards
       };
     case GAME.HIT_ME_FAILED:
