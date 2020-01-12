@@ -57,7 +57,8 @@ const game = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        ...action.payload
+        ...action.payload,
+        timeLeft: 10
       };
     case GAME.STAND_FAILED:
       return {

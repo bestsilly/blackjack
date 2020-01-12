@@ -91,6 +91,7 @@ export const stand = username => {
       .post("http://localhost:5051/api/stand", { username })
       .then(res => {
         console.log(res);
+        clearInterval(timer);
         dispatch(standSuccess(res.data));
       })
       .catch(err => {
@@ -124,7 +125,7 @@ export const timerStart = () => (dispatch, getState) => {
       dispatch(timerStop());
       dispatch(hitMe(username));
     } else {
-      // dispatch(tick());
+      dispatch(tick());
     }
   }, 1000);
   dispatch({ type: GAME.TIMER_START });
