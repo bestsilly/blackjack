@@ -101,7 +101,11 @@ exports.hit = function(req, res) {
         timer(req.body.username);
         res.send({ playerCards });
       } else {
-        res.send(doc);
+        res.send({
+          playerCards: doc.playerCards,
+          computerCards: doc.computerCards,
+          winner: doc.winner
+        });
       }
     });
   }

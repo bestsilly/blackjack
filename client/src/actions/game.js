@@ -6,10 +6,14 @@ export const GAME = {
   HIT_ME_BEGIN: "HIT_ME_BEGIN",
   HIT_ME_SUCCESS: "HIT_ME_SUCCESS",
   HIT_ME_FAILED: "HIT_ME_FAILED",
+  STAND_BEGIN: "STAND_BEGIN",
+  STAND_SUCCESS: "STAND_SUCCESS",
+  STAND_FAILED: "STAND_FAILED",
   REINIT_TIMER: "REINIT_TIMER",
   TIMER_START: "TIMER_START",
   TIMER_STOP: "TIMER_STOP",
-  TICK: "TICK"
+  TICK: "TICK",
+  EXIT: "EXIT"
 };
 
 let timer = null;
@@ -80,6 +84,34 @@ const hitMeFailed = error => ({
   error
 });
 
+export const stand = username => {
+  return dispatch => {
+    dispatch(standBegin());
+    axios
+      .post("http://localhost:5051/api/stand", { username })
+      .then(res => {
+        console.log(res);
+        dispatch(standSuccess(res.data));
+      })
+      .catch(err => {
+        console.log(err);
+        dispatch(standFailed(err));
+      });
+  };
+};
+
+const standBegin = () => ({
+  type: GAME.STAND_BEGIN
+});
+const standSuccess = payload => ({
+  type: GAME.STAND_SUCCESS,
+  payload
+});
+const standFailed = error => ({
+  type: GAME.STAND_FAILED,
+  error
+});
+
 export const reinitTimer = () => ({
   type: GAME.REINIT_TIMER
 });
@@ -92,7 +124,7 @@ export const timerStart = () => (dispatch, getState) => {
       dispatch(timerStop());
       dispatch(hitMe(username));
     } else {
-      dispatch(tick());
+      // dispatch(tick());
     }
   }, 1000);
   dispatch({ type: GAME.TIMER_START });
@@ -106,3 +138,10 @@ const timerStop = () => {
 const tick = () => ({
   type: GAME.TICK
 });
+
+export const exit = ownProps => {
+  ownProps.history.push("/");
+  return {
+    type: GAME.EXIT
+  };
+};
