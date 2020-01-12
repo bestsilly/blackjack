@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import styled from "styled-components";
 import TextInput from "../commons/TextInput";
 import Button from "../commons/Button";
-import { startGame, reinitTimer } from "../../actions/game";
+import { startGame, reinitTimer, clearState } from "../../actions/game";
 
 const Wrapper = styled.div`
   display: flex;
@@ -22,7 +22,7 @@ const Wrapper = styled.div`
 `;
 
 const MainPage = props => {
-  const { startGame, reinitTimer } = props;
+  const { startGame, reinitTimer, clearState } = props;
   const [username, setUsername] = useState("");
 
   const handleStartGame = () => {
@@ -35,6 +35,7 @@ const MainPage = props => {
 
   useEffect(() => {
     reinitTimer();
+    clearState();
   }, [reinitTimer]);
 
   return (
@@ -52,7 +53,8 @@ const MainPage = props => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   startGame: username => dispatch(startGame(username, ownProps)),
-  reinitTimer: () => dispatch(reinitTimer())
+  reinitTimer: () => dispatch(reinitTimer()),
+  clearState: () => dispatch(clearState())
 });
 
 export default connect(null, mapDispatchToProps)(MainPage);

@@ -12,6 +12,7 @@ export const GAME = {
   REINIT_TIMER: "REINIT_TIMER",
   TIMER_START: "TIMER_START",
   TIMER_STOP: "TIMER_STOP",
+  CLEAR_STATE: "CLEAR_STATE",
   TICK: "TICK",
   EXIT: "EXIT"
 };
@@ -144,5 +145,12 @@ export const exit = ownProps => {
   ownProps.history.push("/");
   return {
     type: GAME.EXIT
+  };
+};
+
+export const clearState = () => {
+  clearInterval(timer);
+  return {
+    type: GAME.CLEAR_STATE
   };
 };

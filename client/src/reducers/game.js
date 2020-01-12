@@ -84,6 +84,9 @@ const game = (state = initialState, action) => {
       };
     case GAME.EXIT:
       return initialState;
+
+    case GAME.CLEAR_STATE:
+      return initialState;
     default:
       return state;
   }

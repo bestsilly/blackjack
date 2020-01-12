@@ -116,6 +116,8 @@ exports.stand = function(req, res) {
   endRound(req.body.username, res);
 };
 
+exports.leaderboard = function (req, res) {}
+
 function forceLose(player) {
   db.findOne({ player }).then(doc => {
     if (!doc) {

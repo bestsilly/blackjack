@@ -93,7 +93,7 @@ const ScoreBadge = styled.p`
   font-weight: bold;
 `;
 
-const BlackjackBadge = styled.p`
+const BlackjackBadge = styled.span`
   padding: 10px 15px;
   position: absolute;
   top: -5px;
