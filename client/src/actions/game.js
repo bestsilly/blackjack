@@ -1,11 +1,11 @@
 import axios from "axios";
 export const GAME = {
-    START_GAME_BEGIN: "START_GAME_BEGIN",
-    START_GAME_SUCCESS: "START_GAME_SUCCESS",
-    START_GAME_FAILED: "START_GAME_FAILED",
-    HIT_ME_BEGIN: "HIT_ME_BEGIN",
-    HIT_ME_SUCCESS: "HIT_ME_SUCCESS",
-    HIT_ME_FAILED: "HIT_ME_FAILED"
+  START_GAME_BEGIN: "START_GAME_BEGIN",
+  START_GAME_SUCCESS: "START_GAME_SUCCESS",
+  START_GAME_FAILED: "START_GAME_FAILED",
+  HIT_ME_BEGIN: "HIT_ME_BEGIN",
+  HIT_ME_SUCCESS: "HIT_ME_SUCCESS",
+  HIT_ME_FAILED: "HIT_ME_FAILED"
 };
 
 export const startGame = (username, ownProps) => {
@@ -28,16 +28,44 @@ const startGameBegin = () => ({
   type: GAME.START_GAME_BEGIN
 });
 
-const startGameSuccess = (playerCard, username, ownProps) => {
+const startGameSuccess = (playerCards, username, ownProps) => {
   ownProps.history.push("/blackjack");
   return {
     type: GAME.START_GAME_SUCCESS,
-    playerCard,
+    playerCards,
     username
   };
 };
 
 const startGameFailed = error => ({
   type: GAME.START_GAME_FAILED,
+  error
+});
+
+export const hitMe = username => {
+  return dispatch => {
+    dispatch(hitMeBegin());
+    axios
+      .post("http://localhost:5051/api/hit", { username })
+      .then(res => {
+        console.log(res);
+        dispatch(hitMeSuccess(res.data));
+      })
+      .catch(err => {
+        console.log(err);
+        dispatch(hitMeFailed(err));
+      });
+  };
+};
+
+const hitMeBegin = () => ({
+  type: GAME.HIT_ME_BEGIN
+});
+const hitMeSuccess = playerCards => ({
+  type: GAME.HIT_ME_SUCCESS,
+  playerCards
+});
+const hitMeFailed = error => ({
+  type: GAME.HIT_ME_FAILED,
   error
 });

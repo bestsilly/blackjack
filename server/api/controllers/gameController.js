@@ -84,72 +84,69 @@ exports.hit = function(req, res) {
     );
   }
 
-  async function hitMe() {
-    result = await db
-      .find({}, { player: req.body.username })
-      .toArray(function(error, result) {
-        if (error) throw error;
-        let gameDeck = result[0].deck;
-        let holdingCards = result[0].playerCards;
-        let hitCard = gameDeck.splice(0, 1);
-        playerCards = holdingCards.concat(hitCard);
+  function hitMe() {
+    db.findOne({ player: req.body.username }).then(doc => {
+      if (!doc) {
+        throw new Error("No record found.");
+      }
+      let gameDeck = doc.deck;
+      let holdingCards = doc.playerCards;
+      let hitCard = gameDeck.splice(0, 1);
+      playerCards = holdingCards.concat(hitCard);
 
-        let currentPoint = playerCards.reduce(
-          (acc, obj) => acc + obj.Weight,
-          0
-        );
+      let currentPoint = playerCards.reduce((acc, obj) => acc + obj.Weight, 0);
 
-        let update = {
-          deck: gameDeck,
-          playerCards
-        };
-        updateGame(update);
-        check(currentPoint, playerCards);
-        res.send(playerCards);
-      });
+      let update = {
+        deck: gameDeck,
+        playerCards
+      };
+      updateGame(update);
+      // check(currentPoint, playerCards);
+      res.send(playerCards);
+    });
   }
 
-  function check(point, card) {
-    if (point > 21) {
-      res.send({
-        status: "lose",
-        card
-      });
-    }
-  }
+  // function check(point, card) {
+  //   if (point > 21) {
+  //     res.send({
+  //       status: "lose",
+  //       card
+  //     });
+  //   }
+  // }
   hitMe();
 };
 
 exports.stand = function(req, res) {
-  async function endRound() {
-    result = await db
-      .find({}, { player: req.body.username })
-      .toArray(function(error, result) {
-        if (error) throw error;
-        let { playerCards, computerCards } = result[0];
-        let playerPoints = summaryPoint(playerCards);
-        let computerPoints = summaryPoint(computerCards);
-        const roundDetail = {
-          playerCards,
-          computerCards
-        };
-        if (playerPoints > computerPoints) {
-          res.send({
-            ...roundDetail,
-            winner: req.body.username
-          });
-        } else if (playerPoints < computerPoints) {
-          res.send({
-            ...roundDetail,
-            winner: "Computer"
-          });
-        } else {
-          res.send({
-            ...roundDetail,
-            winner: "draw"
-          });
-        }
-      });
+  function endRound() {
+    db.findOne({ player: req.body.username }).then(doc => {
+      if (!doc) {
+        throw new Error("No record found.");
+      }
+      let { playerCards, computerCards } = result[0];
+      let playerPoints = summaryPoint(playerCards);
+      let computerPoints = summaryPoint(computerCards);
+      const roundDetail = {
+        playerCards,
+        computerCards
+      };
+      if (playerPoints > computerPoints) {
+        res.send({
+          ...roundDetail,
+          winner: req.body.username
+        });
+      } else if (playerPoints < computerPoints) {
+        res.send({
+          ...roundDetail,
+          winner: "Computer"
+        });
+      } else {
+        res.send({
+          ...roundDetail,
+          winner: "draw"
+        });
+      }
+    });
   }
 
   endRound();

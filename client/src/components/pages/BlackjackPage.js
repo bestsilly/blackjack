@@ -4,6 +4,7 @@ import styled from "styled-components";
 import Card from "../commons/Card";
 import Button from "../commons/Button";
 import { isEmpty } from "lodash";
+import { hitMe } from "../../actions/game";
 
 const Wrapper = styled.div`
   display: flex;
@@ -76,51 +77,60 @@ const ScoreBadge = styled.p`
   font-weight: bold;
 `;
 
-const BlackjackPage = ({ game }) => (
-  <Wrapper>
-    <Header>
-      <Logo></Logo>
-      <h1>BLACKJACK</h1>
-      <Username>
-        <p>{game.username}</p>
-      </Username>
-    </Header>
-    <GameZone>
-      <CardWrapper>
-        {isEmpty(game.computerCard) ? (
-          <>
-            <Card closed={true} />
-            <Card closed={true} />
-          </>
-        ) : (
-          <>
-            {game.computerCard.map((item, index) => (
-              <Card key={index} Value={item.Value} />
-            ))}
-          </>
-        )}
-      </CardWrapper>
-      <StatusText></StatusText>
-      <CardWrapper>
-        {!isEmpty(game.playerCard) && (
-          <ScoreBadge>
-            {game.playerCard.reduce((acc, obj) => acc + obj.Weight, 0)}
-          </ScoreBadge>
-        )}
-        {game.playerCard.map((item, index) => (
-          <Card key={index} Value={item.Value} />
-        ))}
-      </CardWrapper>
-      <ButtonsWrapper>
-        <Button>HIT</Button>
-        <Button>STAND</Button>
-      </ButtonsWrapper>
-    </GameZone>
-  </Wrapper>
-);
+const BlackjackPage = ({ game, hitMe }) => {
+  const handleHitMe = () => {
+    hitMe(game.username);
+  };
+
+  return (
+    <Wrapper>
+      <Header>
+        <Logo></Logo>
+        <h1>BLACKJACK</h1>
+        <Username>
+          <p>{game.username}</p>
+        </Username>
+      </Header>
+      <GameZone>
+        <CardWrapper>
+          {isEmpty(game.computerCard) ? (
+            <>
+              <Card closed={true} />
+              <Card closed={true} />
+            </>
+          ) : (
+            <>
+              {game.computerCard.map((item, index) => (
+                <Card key={index} Value={item.Value} />
+              ))}
+            </>
+          )}
+        </CardWrapper>
+        <StatusText></StatusText>
+        <CardWrapper>
+          {!isEmpty(game.playerCards) && (
+            <ScoreBadge>
+              {game.playerCards.reduce((acc, obj) => acc + obj.Weight, 0)}
+            </ScoreBadge>
+          )}
+          {game.playerCards.map((item, index) => (
+            <Card key={index} Value={item.Value} />
+          ))}
+        </CardWrapper>
+        <ButtonsWrapper>
+          <Button onClick={handleHitMe}>HIT</Button>
+          <Button>STAND</Button>
+        </ButtonsWrapper>
+      </GameZone>
+    </Wrapper>
+  );
+};
 
 const mapStateToProps = state => ({
   game: state.game
 });
+const mapDispatchToProps = dispatch => ({
+  hitMe: username => dispatch(hitMe(username))
+});
 
-export default connect(mapStateToProps)(BlackjackPage);
+export default connect(mapStateToProps, mapDispatchToProps)(BlackjackPage);

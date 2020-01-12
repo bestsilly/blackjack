@@ -3,8 +3,8 @@ import { GAME } from "../actions/game";
 const initialState = {
   loading: false,
   error: null,
-  playerCard: [],
-  computerCard: [],
+  playerCards: [],
+  computerCards: [],
   username: ""
 };
 
@@ -19,10 +19,26 @@ const game = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        playerCard: action.playerCard,
+        playerCards: action.playerCards,
         username: action.username
       };
     case GAME.START_GAME_FAILED:
+      return {
+        ...state,
+        loading: false,
+        error: action.error
+      };
+    case GAME.HIT_ME_BEGIN:
+      return {
+        ...state,
+        loading: true
+      };
+    case GAME.HIT_ME_SUCCESS:
+      return {
+        ...state,
+        playerCards: action.playerCards
+      };
+    case GAME.HIT_ME_FAILED:
       return {
         ...state,
         loading: false,
