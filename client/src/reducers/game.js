@@ -5,7 +5,8 @@ const initialState = {
   error: null,
   playerCards: [],
   computerCards: [],
-  username: ""
+  username: "",
+  timeLeft: 10
 };
 
 const game = (state = initialState, action) => {
@@ -44,6 +45,11 @@ const game = (state = initialState, action) => {
         ...state,
         loading: false,
         error: action.error
+      };
+    case GAME.TICK:
+      return {
+        ...state,
+        timeLeft: state.timeLeft - 1
       };
     default:
       return state;

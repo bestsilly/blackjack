@@ -5,7 +5,8 @@ export const GAME = {
   START_GAME_FAILED: "START_GAME_FAILED",
   HIT_ME_BEGIN: "HIT_ME_BEGIN",
   HIT_ME_SUCCESS: "HIT_ME_SUCCESS",
-  HIT_ME_FAILED: "HIT_ME_FAILED"
+  HIT_ME_FAILED: "HIT_ME_FAILED",
+  TICK: "TICK"
 };
 
 export const startGame = (username, ownProps) => {
@@ -68,4 +69,8 @@ const hitMeSuccess = playerCards => ({
 const hitMeFailed = error => ({
   type: GAME.HIT_ME_FAILED,
   error
+});
+
+export const tick = value => ({
+  type: GAME.TICK
 });

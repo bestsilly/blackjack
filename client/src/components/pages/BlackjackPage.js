@@ -83,12 +83,6 @@ const BlackjackPage = ({ game, hitMe }) => {
     hitMe(game.username);
   };
 
-  //   useEffect(()=> {
-  //       setTimeout(()=>{
-  //         alert('YOU LOSE')
-  //       }, 10000)
-  //   })
-
   return (
     <Wrapper>
       <Header>
