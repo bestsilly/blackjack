@@ -61,9 +61,17 @@ export const hitMe = username => {
       .post("http://localhost:5051/api/hit", { username })
       .then(res => {
         console.log(res);
+        const playerPoint = res.data.playerCards.reduce(
+          (acc, obj) => acc + obj.Weight,
+          0
+        );
+        console.log(playerPoint);
         dispatch(hitMeSuccess(res.data));
-        if (!res.data.winner) {
+        dispatch(reinitTimer());
+        if (playerPoint > 21) {
+          console.log(playerPoint + "asd");
           dispatch(reinitTimer());
+          clearInterval(timer);
         }
       })
       .catch(err => {

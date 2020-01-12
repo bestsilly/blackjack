@@ -22,15 +22,29 @@ const Wrapper = styled.div`
 `;
 
 const MainPage = props => {
-  const { startGame, reinitTimer, clearState } = props;
+  const { startGame, reinitTimer, clearState, history } = props;
   const [username, setUsername] = useState("");
 
   const handleStartGame = () => {
-    startGame(username);
+    if (username !== "") {
+      startGame(username);
+    }
+  };
+
+  const onEnter = event => {
+    if (event.keyCode === 13) {
+      if (username !== "") {
+        startGame(username);
+      }
+    }
   };
 
   const handleUsername = event => {
     setUsername(event.target.value);
+  };
+
+  const handleLeaderboard = () => {
+    history.push("/leaderboard");
   };
 
   useEffect(() => {
@@ -44,9 +58,10 @@ const MainPage = props => {
       <TextInput
         placeholder="Please Enter Username..."
         onChange={handleUsername}
+        onKeyDown={onEnter}
       />
       <Button onClick={handleStartGame}>Start</Button>
-      <Button>Leaderboard</Button>
+      <Button onClick={handleLeaderboard}>Leaderboard</Button>
     </Wrapper>
   );
 };

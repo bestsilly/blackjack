@@ -98,8 +98,12 @@ exports.hit = function(req, res) {
           playerCards
         };
         updateGame(req.body.username, update);
-        timer(req.body.username);
-        res.send({ playerCards });
+        if (currentPoint > 21) {
+          endRound(req.body.username, res);
+        } else {
+          timer(req.body.username);
+          res.send({ playerCards });
+        }
       } else {
         res.send({
           playerCards: doc.playerCards,
@@ -116,7 +120,10 @@ exports.stand = function(req, res) {
   endRound(req.body.username, res);
 };
 
-exports.leaderboard = function (req, res) {}
+exports.leaderboard = async function(req, res) {
+  const doc = await db.find({}, { projection: { _id: 1, player: 1, winner: 1 } }).toArray();
+  res.send(doc);
+};
 
 function forceLose(player) {
   db.findOne({ player }).then(doc => {
@@ -155,27 +162,41 @@ function endRound(player, res) {
       throw new Error("No record found.");
     }
     let { playerCards, computerCards } = doc;
-    let playerPoints = summaryPoint(playerCards);
-    let computerPoints = summaryPoint(computerCards);
-    const roundDetail = {
-      playerCards,
-      computerCards
-    };
-    if (playerPoints > computerPoints) {
-      res.send({
-        ...roundDetail,
-        winner: player
-      });
-    } else if (playerPoints < computerPoints) {
-      res.send({
-        ...roundDetail,
-        winner: "Computer"
-      });
-    } else {
-      res.send({
-        ...roundDetail,
-        winner: "Draw"
-      });
-    }
+    check(player, playerCards, computerCards, res);
   });
+}
+
+function check(player, playerCards, computerCards = [], res) {
+  let playerPoints = summaryPoint(playerCards);
+  let computerPoints = summaryPoint(computerCards);
+  const roundDetail = {
+    playerCards,
+    computerCards
+  };
+  if (playerPoints > 21) {
+    res.send({
+      ...roundDetail,
+      winner: "Computer"
+    });
+  } else if (computerPoints > 21) {
+    res.send({
+      ...roundDetail,
+      winner: player
+    });
+  } else if (playerPoints > computerPoints && computerPoints) {
+    res.send({
+      ...roundDetail,
+      winner: player
+    });
+  } else if (playerPoints < computerPoints && computerPoints) {
+    res.send({
+      ...roundDetail,
+      winner: "Computer"
+    });
+  } else {
+    res.send({
+      ...roundDetail,
+      winner: "Draw"
+    });
+  }
 }

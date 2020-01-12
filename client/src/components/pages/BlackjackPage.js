@@ -170,12 +170,7 @@ const BlackjackPage = ({ game, hitMe, stand, exit, history }) => {
             </>
           ) : (
             <>
-              <ScoreBadge
-                loser={
-                  pointsSummary(game.computerCards) <
-                  pointsSummary(game.playerCards)
-                }
-              >
+              <ScoreBadge loser={game.winner !== "Computer"}>
                 {pointsSummary(game.computerCards)}
               </ScoreBadge>
               {game.computerCards.map((item, index) => (
@@ -197,12 +192,7 @@ const BlackjackPage = ({ game, hitMe, stand, exit, history }) => {
         </StatusWrapper>
         <CardWrapper>
           {!isEmpty(game.playerCards) && (
-            <ScoreBadge
-              loser={
-                pointsSummary(game.computerCards) >
-                pointsSummary(game.playerCards)
-              }
-            >
+            <ScoreBadge loser={game.winner === "Computer"}>
               {pointsSummary(game.playerCards)}
             </ScoreBadge>
           )}
