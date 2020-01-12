@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 import styled from "styled-components";
 import Card from "../commons/Card";
 import Button from "../commons/Button";
@@ -78,16 +79,22 @@ const ScoreBadge = styled.p`
   font-weight: bold;
 `;
 
-const BlackjackPage = ({ game, hitMe }) => {
+const BlackjackPage = ({ game, hitMe, history }) => {
   const handleHitMe = () => {
     hitMe(game.username);
   };
+
+  useEffect(() => {
+    if(game.username === "") {
+      history.push("/")
+    }
+  }, [game.username, history]);
 
   return (
     <Wrapper>
       <Header>
         <LeftAsset>
-          <Counter timeout={() => console.log(123)} />
+          <Counter timeout={handleHitMe} />
         </LeftAsset>
         <h1>BLACKJACK</h1>
         <Username>
@@ -96,20 +103,20 @@ const BlackjackPage = ({ game, hitMe }) => {
       </Header>
       <GameZone>
         <CardWrapper>
-          {isEmpty(game.computerCard) ? (
+          {isEmpty(game.computerCards) ? (
             <>
               <Card closed={true} />
               <Card closed={true} />
             </>
           ) : (
             <>
-              {game.computerCard.map((item, index) => (
+              {game.computerCards.map((item, index) => (
                 <Card key={index} Value={item.Value} />
               ))}
             </>
           )}
         </CardWrapper>
-        <StatusText></StatusText>
+              <StatusText>{}</StatusText>
         <CardWrapper>
           {!isEmpty(game.playerCards) && (
             <ScoreBadge>
@@ -136,4 +143,6 @@ const mapDispatchToProps = dispatch => ({
   hitMe: username => dispatch(hitMe(username))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(BlackjackPage);
+export default withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(BlackjackPage)
+);

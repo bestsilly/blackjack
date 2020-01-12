@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import styled from "styled-components";
 import { ReactComponent as Circle } from "../../assets/circle.svg";
-import { tick } from "../../actions/game";
 
 const CounterWrapper = styled.div`
   margin-left: 25px;
@@ -15,6 +14,10 @@ const CountdownWrapper = styled.div`
   text-align: center;
   background-color: #fff;
   border-radius: 80px;
+
+  &.animated svg circle {
+    animation: countdown 9s linear;
+  }
 
   svg {
     position: absolute;
@@ -30,7 +33,6 @@ const CountdownWrapper = styled.div`
       stroke-width: 4px;
       stroke: #009688;
       fill: none;
-      animation: countdown 10.2s linear;
     }
   }
   @keyframes countdown {
@@ -50,29 +52,10 @@ const CountdownNumber = styled.div`
   line-height: 80px;
 `;
 
-const Counter = ({ timeout, timeLeft, tick }) => {
-
-  useEffect(() => {
-    // exit early when we reach 0
-    if (!timeLeft) {
-      timeout();
-      return;
-    }
-
-    // save intervalId to clear the interval when the
-    // component re-renders
-    const intervalId = setInterval(() => {
-      tick();
-    }, 1000);
-
-    // clear interval on re-render to avoid memory leaks
-    return () => clearInterval(intervalId);
-    // add timeLeft as a dependency to re-rerun the effect
-    // when we update it
-  }, [timeLeft]);
+const Counter = ({ timeLeft }) => {
   return (
     <CounterWrapper>
-      <CountdownWrapper>
+      <CountdownWrapper className={timeLeft <= 9 ? "animated" : ""}>
         <CountdownNumber>{timeLeft}</CountdownNumber>
         <Circle />
       </CountdownWrapper>
@@ -81,11 +64,8 @@ const Counter = ({ timeout, timeLeft, tick }) => {
 };
 
 const mapStateToProps = state => ({
-  timeLeft: state.game.timeLeft
+  timeLeft: state.game.timeLeft,
+  username: state.game.username
 });
 
-const mapDispatchToProps = dispatch => ({
-  tick: () => dispatch(tick())
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Counter);
+export default connect(mapStateToProps)(Counter);

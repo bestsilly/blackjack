@@ -6,7 +6,8 @@ const initialState = {
   playerCards: [],
   computerCards: [],
   username: "",
-  timeLeft: 10
+  timeLeft: 10,
+  winner: null
 };
 
 const game = (state = initialState, action) => {
@@ -38,13 +39,23 @@ const game = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        playerCards: action.playerCards
+        ...action.payload
       };
     case GAME.HIT_ME_FAILED:
       return {
         ...state,
         loading: false,
         error: action.error
+      };
+    case GAME.REINIT_TIMER:
+      return {
+        ...state,
+        timeLeft: 10
+      };
+    case GAME.TIMER_STOP:
+      return {
+        ...state,
+        timeLeft: 0
       };
     case GAME.TICK:
       return {

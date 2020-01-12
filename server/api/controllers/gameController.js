@@ -1,3 +1,5 @@
+let time = null;
+
 exports.startgame = function(req, res) {
   let suits = ["Spades", "Hearts", "Diamonds", "Clubs"];
   let values = [
@@ -69,89 +71,105 @@ exports.startgame = function(req, res) {
     createDeck();
     shuffle();
     dealHand();
-    res.send(playerCards);
+    timer(req.body.username);
+    res.send({ playerCards });
   }
 };
 
 exports.hit = function(req, res) {
-  async function updateGame(data) {
-    result = await db.updateOne(
-      { player: req.body.username },
-      { $set: data },
-      function(err, result) {
-        if (err) throw err;
-      }
-    );
-  }
-
   function hitMe() {
     db.findOne({ player: req.body.username }).then(doc => {
       if (!doc) {
         throw new Error("No record found.");
       }
-      let gameDeck = doc.deck;
-      let holdingCards = doc.playerCards;
-      let hitCard = gameDeck.splice(0, 1);
-      playerCards = holdingCards.concat(hitCard);
+      if (doc.winner === null) {
+        let gameDeck = doc.deck;
+        let holdingCards = doc.playerCards;
+        let hitCard = gameDeck.splice(0, 1);
+        playerCards = holdingCards.concat(hitCard);
 
-      let currentPoint = playerCards.reduce((acc, obj) => acc + obj.Weight, 0);
+        let currentPoint = playerCards.reduce(
+          (acc, obj) => acc + obj.Weight,
+          0
+        );
 
-      let update = {
-        deck: gameDeck,
-        playerCards
-      };
-      updateGame(update);
-      // check(currentPoint, playerCards);
-      res.send(playerCards);
+        let update = {
+          deck: gameDeck,
+          playerCards
+        };
+        updateGame(req.body.username, update);
+        timer(req.body.username);
+        res.send({ playerCards });
+      } else {
+        res.send(doc);
+      }
     });
   }
-
-  // function check(point, card) {
-  //   if (point > 21) {
-  //     res.send({
-  //       status: "lose",
-  //       card
-  //     });
-  //   }
-  // }
   hitMe();
 };
 
 exports.stand = function(req, res) {
-  function endRound() {
-    db.findOne({ player: req.body.username }).then(doc => {
-      if (!doc) {
-        throw new Error("No record found.");
-      }
-      let { playerCards, computerCards } = result[0];
-      let playerPoints = summaryPoint(playerCards);
-      let computerPoints = summaryPoint(computerCards);
-      const roundDetail = {
-        playerCards,
-        computerCards
-      };
-      if (playerPoints > computerPoints) {
-        res.send({
-          ...roundDetail,
-          winner: req.body.username
-        });
-      } else if (playerPoints < computerPoints) {
-        res.send({
-          ...roundDetail,
-          winner: "Computer"
-        });
-      } else {
-        res.send({
-          ...roundDetail,
-          winner: "draw"
-        });
-      }
-    });
-  }
-
-  endRound();
+  endRound(req.body.username, res);
 };
+
+function forceLose(player) {
+  db.findOne({ player }).then(doc => {
+    if (!doc) {
+      throw new Error("No record found.");
+    }
+    let gameData = {
+      endAt: new Date(),
+      winner: "Computer"
+    };
+    updateGame(player, gameData);
+  });
+}
 
 function summaryPoint(holdingCards) {
   return holdingCards.reduce((acc, obj) => acc + obj.Weight, 0);
+}
+
+function updateGame(player, data) {
+  db.updateOne({ player }, { $set: data }, function(err, result) {
+    if (err) throw err;
+  });
+}
+
+function timer(player) {
+  clearTimeout(time);
+  time = setTimeout(() => {
+    console.log(`${player} Time Up!`);
+    forceLose(player);
+  }, 10000);
+}
+
+function endRound(player, res) {
+  db.findOne({ player }).then(doc => {
+    if (!doc) {
+      throw new Error("No record found.");
+    }
+    let { playerCards, computerCards } = doc;
+    let playerPoints = summaryPoint(playerCards);
+    let computerPoints = summaryPoint(computerCards);
+    const roundDetail = {
+      playerCards,
+      computerCards
+    };
+    if (playerPoints > computerPoints) {
+      res.send({
+        ...roundDetail,
+        winner: player
+      });
+    } else if (playerPoints < computerPoints) {
+      res.send({
+        ...roundDetail,
+        winner: "Computer"
+      });
+    } else {
+      res.send({
+        ...roundDetail,
+        winner: "Draw"
+      });
+    }
+  });
 }

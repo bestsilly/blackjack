@@ -6,8 +6,13 @@ export const GAME = {
   HIT_ME_BEGIN: "HIT_ME_BEGIN",
   HIT_ME_SUCCESS: "HIT_ME_SUCCESS",
   HIT_ME_FAILED: "HIT_ME_FAILED",
+  REINIT_TIMER: "REINIT_TIMER",
+  TIMER_START: "TIMER_START",
+  TIMER_STOP: "TIMER_STOP",
   TICK: "TICK"
 };
+
+let timer = null;
 
 export const startGame = (username, ownProps) => {
   return dispatch => {
@@ -16,7 +21,9 @@ export const startGame = (username, ownProps) => {
       .post("http://localhost:5051/api/startgame", { username })
       .then(res => {
         console.log(res.data);
-        dispatch(startGameSuccess(res.data, username, ownProps));
+        dispatch(startGameSuccess(res.data.playerCards, username));
+        dispatch(timerStart());
+        ownProps.history.push("/blackjack");
       })
       .catch(err => {
         console.log(err);
@@ -30,7 +37,6 @@ const startGameBegin = () => ({
 });
 
 const startGameSuccess = (playerCards, username, ownProps) => {
-  ownProps.history.push("/blackjack");
   return {
     type: GAME.START_GAME_SUCCESS,
     playerCards,
@@ -51,6 +57,9 @@ export const hitMe = username => {
       .then(res => {
         console.log(res);
         dispatch(hitMeSuccess(res.data));
+        if (!res.data.winner) {
+          dispatch(reinitTimer());
+        }
       })
       .catch(err => {
         console.log(err);
@@ -62,15 +71,38 @@ export const hitMe = username => {
 const hitMeBegin = () => ({
   type: GAME.HIT_ME_BEGIN
 });
-const hitMeSuccess = playerCards => ({
+const hitMeSuccess = payload => ({
   type: GAME.HIT_ME_SUCCESS,
-  playerCards
+  payload
 });
 const hitMeFailed = error => ({
   type: GAME.HIT_ME_FAILED,
   error
 });
 
-export const tick = value => ({
+export const reinitTimer = () => ({
+  type: GAME.REINIT_TIMER
+});
+
+export const timerStart = () => (dispatch, getState) => {
+  clearInterval(timer);
+  timer = setInterval(() => {
+    const { timeLeft, username } = getState().game;
+    if (timeLeft === 0) {
+      dispatch(timerStop());
+      dispatch(hitMe(username));
+    } else {
+      dispatch(tick());
+    }
+  }, 1000);
+  dispatch({ type: GAME.TIMER_START });
+};
+
+const timerStop = () => {
+  clearInterval(timer);
+  return { type: GAME.TIMER_STOP };
+};
+
+const tick = () => ({
   type: GAME.TICK
 });
